@@ -1,0 +1,31 @@
+---
+// Kraft coffee bag with a coloured label. `hue` tints the label per origin.
+interface Props {
+  hue: string
+  label: string
+}
+const { hue, label } = Astro.props
+---
+<svg class="bag" viewBox="0 0 160 200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <path d="M30 34 L130 34 L142 186 Q80 196 18 186 Z" fill="#d8b98f" />
+  <path d="M30 34 L130 34 L132 52 L28 52 Z" fill="#c9a77a" />
+  <path d="M26 26 H134 V38 H26 Z" fill="#b8925f" />
+  <g stroke="#a98252" stroke-width="1.4" opacity="0.6">
+    <path d="M40 26v12M56 26v12M72 26v12M88 26v12M104 26v12M120 26v12" />
+  </g>
+  <rect x="44" y="78" width="72" height="80" rx="4" fill={hue} />
+  <circle cx="80" cy="104" r="14" fill="none" stroke="#f5efe3" stroke-width="2" />
+  <path d="M80 92 C74 100 74 108 80 116 C86 108 86 100 80 92Z" fill="#f5efe3" />
+  <text x="80" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="#f5efe3" font-family="Chonburi, serif">{label}</text>
+  <path d="M18 186 Q80 196 142 186" fill="none" stroke="#b8925f" stroke-width="2" />
+</svg>
+
+<style>
+  .bag {
+    width: 120px;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 10px 12px rgba(60, 35, 15, 0.22));
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+</style>

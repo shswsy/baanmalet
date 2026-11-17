@@ -1,0 +1,479 @@
+---
+import '../styles/global.css'
+import HeroArt from './HeroArt.astro'
+import BeanBag from './BeanBag.astro'
+import StoryIcon from './StoryIcon.astro'
+import { beans, days, menu, reviews, site, t, type Lang } from '../data/site'
+
+interface Props {
+  lang: Lang
+}
+const { lang } = Astro.props
+const c = t[lang]
+const other: Lang = lang === 'th' ? 'en' : 'th'
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+const href = (l: Lang) => `${base}/${l === 'th' ? '' : 'en/'}`
+const canonical = new URL(href(lang), Astro.site).href
+const ogImage = new URL(`${base}/og.png`, Astro.site).href
+const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.mapQuery)}`
+const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(site.mapQuery)}&z=16&output=embed&hl=${lang}`
+const fmtHours = (h: [number, number] | null) =>
+  h ? `${String(h[0]).padStart(2, '0')}:00 – ${String(h[1]).padStart(2, '0')}:00` : c.closed
+const price = (n: number) => n.toLocaleString('th-TH')
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CafeOrCoffeeShop',
+  name: site.name[lang],
+  description: c.description,
+  url: canonical,
+  image: ogImage,
+  telephone: site.phone,
+  servesCuisine: 'Coffee',
+  priceRange: '฿฿',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address[lang],
+    addressLocality: 'Chiang Mai',
+    postalCode: '50200',
+    addressCountry: 'TH',
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
+  openingHoursSpecification: site.hours.flatMap((h, i) =>
+    h
+      ? [
+          {
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: `https://schema.org/${days.en[i]}`,
+            opens: `${String(h[0]).padStart(2, '0')}:00`,
+            closes: `${String(h[1]).padStart(2, '0')}:00`,
+          },
+        ]
+      : [],
+  ),
+}
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{c.title}</title>
+    <meta name="description" content={c.description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="th" href={new URL(href('th'), Astro.site).href} />
+    <link rel="alternate" hreflang="en" href={new URL(href('en'), Astro.site).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL(href('th'), Astro.site).href} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <meta name="theme-color" content="#1f3b2d" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={c.title} />
+    <meta property="og:description" content={c.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === 'th' ? 'th_TH' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&family=Chonburi&display=swap"
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+
+  <body>
+    <a class="skip" href="#main">{c.skip}</a>
+
+    <header class="nav" data-nav>
+      <div class="wrap nav-row">
+        <a class="logo" href={href(lang)} aria-label={site.name[lang]}>
+          <span class="logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 40 40"><path d="M20 4C11 12 11 28 20 36C29 28 29 12 20 4Z" fill="currentColor" /><path d="M20 8C16 16 24 24 20 32" stroke="var(--cream)" stroke-width="2.4" fill="none" stroke-linecap="round" /></svg>
+          </span>
+          <span class="logo-text">
+            <strong>{site.name[lang]}</strong>
+            <small>{site.tagline[lang]}</small>
+          </span>
+        </a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" data-menu-btn>
+          <span></span><span></span><span class="sr">menu</span>
+        </button>
+        <nav id="nav-links" class="nav-links" data-nav-links>
+          <a href="#menu">{c.nav.menu}</a>
+          <a href="#beans">{c.nav.beans}</a>
+          <a href="#story">{c.nav.story}</a>
+          <a href="#workshop">{c.nav.workshop}</a>
+          <a href="#visit">{c.nav.visit}</a>
+          <a class="lang" href={href(other)} hreflang={other} lang={other}>{c.switchLang}</a>
+          <a class="btn btn-line" href="#line" data-line={c.greeting}>{c.line}</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- HERO -->
+      <section class="hero">
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <p class="kicker reveal">{c.heroKicker}</p>
+            <h1 class="reveal" style="--d:.08s">
+              <span>{c.heroTitle[0]}</span>
+              <em>{c.heroTitle[1]}</em>
+            </h1>
+            <p class="lead reveal" style="--d:.16s">{c.heroLead}</p>
+            <div class="hero-ctas reveal" style="--d:.24s">
+              <a class="btn btn-primary" href="#menu">{c.heroCta}</a>
+              <a class="btn btn-ghost" href="#visit">{c.heroCta2}</a>
+            </div>
+            <p
+              class="open-badge reveal"
+              style="--d:.32s"
+              data-open
+              data-hours={JSON.stringify(site.hours)}
+              data-l-open={c.openNow}
+              data-l-closed={c.closedNow}
+              data-l-closes={c.closesAt}
+              data-l-opens={c.opensAt}
+              data-days={JSON.stringify(days[lang])}
+            >
+              <span class="dot"></span><span data-open-text>{fmtHours(site.hours[2])}</span>
+            </p>
+          </div>
+          <div class="hero-art-wrap reveal" style="--d:.1s">
+            <HeroArt />
+          </div>
+        </div>
+        <div class="wrap">
+          <ul class="stats">
+            {
+              c.stats.map(([n, l]) => (
+                <li>
+                  <strong>{n}</strong>
+                  <span>{l}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+
+      <div class="lanna" aria-hidden="true"></div>
+
+      <!-- MENU -->
+      <section id="menu" class="section">
+        <div class="wrap">
+          <header class="sec-head">
+            <h2>{c.menuTitle}</h2>
+            <p>{c.menuLead}</p>
+          </header>
+          <div class="tabs" role="tablist" aria-label={c.menuTitle} data-tabs>
+            {
+              (['all', 'coffee', 'noncoffee', 'bakery'] as const).map((k, i) => (
+                <button type="button" role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-cat={k}>
+                  {c.cats[k]}
+                </button>
+              ))
+            }
+          </div>
+          <ul class="menu-list" data-menu>
+            {
+              menu.map((m) => (
+                <li class="menu-item" data-cat={m.cat}>
+                  <div class="menu-top">
+                    <h3>
+                      {m.name[lang]}
+                      {m.tag && <span class="tag">{m.tag[lang]}</span>}
+                    </h3>
+                    <span class="leader" aria-hidden="true" />
+                    <span class="price">{price(m.price)}</span>
+                  </div>
+                  <p>{m.note[lang]}</p>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+
+      <!-- BEANS -->
+      <section id="beans" class="section section-dark">
+        <div class="wrap">
+          <header class="sec-head">
+            <h2>{c.beansTitle}</h2>
+            <p>{c.beansLead}</p>
+          </header>
+          <ul class="beans">
+            {
+              beans.map((b) => (
+                <li class="bean">
+                  <BeanBag hue={b.hue} label={b.name[lang]} />
+                  <div class="bean-body">
+                    <h3>{b.name[lang]}</h3>
+                    <p class="bean-origin">
+                      {b.origin[lang]} · {b.process[lang]}
+                    </p>
+                    <p class="bean-notes">{b.notes[lang]}</p>
+                    <div class="roast" aria-label={`${c.roast} ${b.roast}/5`}>
+                      <span>{c.roastScale[0]}</span>
+                      <span class="roast-bar">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <i class={n <= b.roast ? 'on' : ''} />
+                        ))}
+                      </span>
+                      <span>{c.roastScale[1]}</span>
+                    </div>
+                    <div class="bean-foot">
+                      <span class="price">
+                        {price(b.price)} <small>฿ / 200 g</small>
+                      </span>
+                      <a class="btn btn-line btn-sm" href="#line" data-line={c.orderMsg(b.name[lang])}>
+                        {c.order}
+                      </a>
+                    </div>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+
+      <!-- STORY -->
+      <section id="story" class="section">
+        <div class="wrap">
+          <header class="sec-head center">
+            <h2>{c.storyTitle}</h2>
+          </header>
+          <ol class="story">
+            {
+              c.story.map(([h, p], i) => (
+                <li class="reveal-on-scroll">
+                  <StoryIcon kind={i as 0 | 1 | 2} />
+                  <span class="story-no">0{i + 1}</span>
+                  <h3>{h}</h3>
+                  <p>{p}</p>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </section>
+
+      <!-- WORKSHOP -->
+      <section id="workshop" class="section">
+        <div class="wrap">
+          <div class="workshop">
+            <div>
+              <h2>{c.workshopTitle}</h2>
+              <p class="lead">{c.workshopLead}</p>
+              <ul class="checks">
+                {c.workshopPoints.map((p) => <li>{p}</li>)}
+              </ul>
+              <a class="btn btn-primary" href="#line" data-line={c.workshopMsg}>
+                {c.workshopCta}
+              </a>
+            </div>
+            <figure class="ticket" aria-hidden="true">
+              <span class="ticket-day">SAT</span>
+              <span class="ticket-time">10:00</span>
+              <span class="ticket-seats">
+                {[1, 2, 3, 4, 5, 6].map((n) => <i class={n <= 4 ? 'taken' : ''} />)}
+              </span>
+              <span class="ticket-price">890 ฿</span>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- REVIEWS -->
+      <section class="section section-cream">
+        <div class="wrap">
+          <header class="sec-head">
+            <h2>{c.reviewsTitle}</h2>
+          </header>
+          <ul class="reviews">
+            {
+              reviews.map((r) => (
+                <li>
+                  <p class="stars" aria-label="5/5">★★★★★</p>
+                  <blockquote>{r.text[lang]}</blockquote>
+                  <p class="who">
+                    {r.who} · <span>{r.src}</span>
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+
+      <!-- VISIT -->
+      <section id="visit" class="section">
+        <div class="wrap visit">
+          <div>
+            <h2>{c.visitTitle}</h2>
+            <address>
+              <strong>{site.name[lang]}</strong>
+              <br />
+              {site.address[lang]}
+            </address>
+            <p class="muted">{c.parking}</p>
+            <h3 class="hours-title">{c.hoursTitle}</h3>
+            <table class="hours" data-hours-table>
+              <tbody>
+                {
+                  [1, 2, 3, 4, 5, 6, 0].map((d) => (
+                    <tr data-day={d}>
+                      <th scope="row">{days[lang][d]}</th>
+                      <td>{fmtHours(site.hours[d])}</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+            <div class="visit-ctas">
+              <a class="btn btn-primary" href={mapsUrl} target="_blank" rel="noopener">{c.directions}</a>
+              <a class="btn btn-ghost" href={site.phoneHref}>{c.call} {site.phone}</a>
+            </div>
+          </div>
+          <div class="map" data-map={mapEmbed}>
+            <button type="button" class="map-load" data-map-load>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z" fill="currentColor" /></svg>
+              <span>{c.mapLoad}</span>
+              <small>{c.mapNote}</small>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="lanna" aria-hidden="true"></div>
+      <div class="wrap footer-row">
+        <div>
+          <strong class="footer-name">{site.name[lang]}</strong>
+          <p>{site.tagline[lang]}</p>
+        </div>
+        <p class="footer-note">{c.footerNote}</p>
+      </div>
+    </footer>
+
+    <!-- mobile quick actions -->
+    <nav class="quick" aria-label="quick actions">
+      <a href={site.phoneHref}>{c.call}</a>
+      <a href="#line" data-line={c.greeting}>LINE</a>
+      <a href={mapsUrl} target="_blank" rel="noopener">{c.nav.visit}</a>
+    </nav>
+
+    <dialog class="line-dialog" data-line-dialog aria-labelledby="line-title">
+      <h2 id="line-title">{c.demoLineTitle}</h2>
+      <p>{c.demoLineBody}</p>
+      <p class="bubble" data-line-msg></p>
+      <form method="dialog"><button class="btn btn-primary">{c.close}</button></form>
+    </dialog>
+
+    <script>
+      // Open-now badge and today's row, computed in Bangkok time.
+      const badge = document.querySelector<HTMLElement>('[data-open]')
+      if (badge) {
+        const hours: ([number, number] | null)[] = JSON.parse(badge.dataset.hours!)
+        const dayNames: string[] = JSON.parse(badge.dataset.days!)
+        const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }))
+        const d = now.getDay()
+        const h = now.getHours() + now.getMinutes() / 60
+        const today = hours[d]
+        const pad = (n: number) => `${String(n).padStart(2, '0')}:00`
+        const open = !!today && h >= today[0] && h < today[1]
+        let text: string
+        if (open) {
+          text = `${badge.dataset.lOpen} · ${badge.dataset.lCloses} ${pad(today![1])}`
+        } else {
+          let next = d
+          let add = 0
+          if (today && h < today[0]) add = 0
+          else {
+            do {
+              next = (next + 1) % 7
+              add++
+            } while (!hours[next] && add < 7)
+          }
+          const nh = hours[next]!
+          text = `${badge.dataset.lClosed} · ${badge.dataset.lOpens} ${add === 0 ? '' : dayNames[next] + ' '}${pad(nh[0])}`
+        }
+        badge.classList.toggle('is-open', open)
+        badge.querySelector('[data-open-text]')!.textContent = text
+        document.querySelector(`[data-hours-table] tr[data-day="${d}"]`)?.classList.add('today')
+      }
+
+      // Menu filter
+      const tabs = document.querySelector('[data-tabs]')
+      tabs?.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-cat]')
+        if (!btn) return
+        tabs.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b === btn)))
+        const cat = btn.dataset.cat
+        document.querySelectorAll<HTMLElement>('[data-menu] .menu-item').forEach((li) => {
+          li.hidden = cat !== 'all' && li.dataset.cat !== cat
+        })
+      })
+
+      // LINE buttons: demo dialog shows the pre-filled message a real LINE OA link would send.
+      const dialog = document.querySelector<HTMLDialogElement>('[data-line-dialog]')
+      document.addEventListener('click', (e) => {
+        const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('[data-line]')
+        if (!a || !dialog) return
+        e.preventDefault()
+        dialog.querySelector('[data-line-msg]')!.textContent = a.dataset.line ?? ''
+        dialog.showModal()
+      })
+      dialog?.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close()
+      })
+
+      // Google map loads only on request (faster page, no third-party cookies until asked).
+      document.querySelector('[data-map-load]')?.addEventListener('click', (e) => {
+        const box = (e.currentTarget as HTMLElement).parentElement!
+        const iframe = document.createElement('iframe')
+        iframe.src = box.dataset.map!
+        iframe.title = 'Google Maps'
+        iframe.loading = 'lazy'
+        iframe.referrerPolicy = 'no-referrer-when-downgrade'
+        box.replaceChildren(iframe)
+      })
+
+      // Mobile nav
+      const menuBtn = document.querySelector<HTMLButtonElement>('[data-menu-btn]')
+      const links = document.querySelector<HTMLElement>('[data-nav-links]')
+      menuBtn?.addEventListener('click', () => {
+        const open = menuBtn.getAttribute('aria-expanded') !== 'true'
+        menuBtn.setAttribute('aria-expanded', String(open))
+        links?.classList.toggle('open', open)
+      })
+      links?.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('a')) {
+          menuBtn?.setAttribute('aria-expanded', 'false')
+          links.classList.remove('open')
+        }
+      })
+
+      // Header shadow + scroll reveals
+      const nav = document.querySelector('[data-nav]')
+      const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 8)
+      onScroll()
+      window.addEventListener('scroll', onScroll, { passive: true })
+      const io = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((en) => {
+            if (en.isIntersecting) {
+              en.target.classList.add('in')
+              io.unobserve(en.target)
+            }
+          }),
+        { threshold: 0.2 },
+      )
+      document.querySelectorAll('.reveal-on-scroll').forEach((el) => io.observe(el))
+    </script>
+  </body>
+</html>

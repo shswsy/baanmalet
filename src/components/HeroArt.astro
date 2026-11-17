@@ -1,0 +1,106 @@
+---
+// Layered northern mountains at dawn, mist, and a coffee branch with ripe cherries.
+---
+<svg class="hero-art" viewBox="0 0 600 560" role="img" aria-label="ภาพวาดดอยยามเช้าและกิ่งกาแฟ" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3d9b8" />
+      <stop offset="0.6" stop-color="#f6e7d0" />
+      <stop offset="1" stop-color="#f5efe3" />
+    </linearGradient>
+    <linearGradient id="mist" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fffaf1" stop-opacity="0" />
+      <stop offset="0.5" stop-color="#fffaf1" stop-opacity="0.85" />
+      <stop offset="1" stop-color="#fffaf1" stop-opacity="0" />
+    </linearGradient>
+    <clipPath id="arch"><path d="M40 560V250C40 120 160 30 300 30s260 90 260 220v310z" /></clipPath>
+  </defs>
+
+  <g clip-path="url(#arch)">
+    <rect width="600" height="560" fill="url(#sky)" />
+    <circle class="sun" cx="390" cy="200" r="58" fill="#e08a4f" />
+    <path d="M0 330 L90 250 L150 290 L230 205 L310 280 L380 230 L470 300 L540 250 L600 290 V560 H0Z" fill="#9db29a" />
+    <rect class="mist m1" x="-80" y="292" width="420" height="22" rx="11" fill="url(#mist)" />
+    <path d="M0 380 L70 320 L160 370 L250 300 L340 360 L430 310 L520 365 L600 330 V560 H0Z" fill="#5f8467" />
+    <rect class="mist m2" x="260" y="352" width="380" height="18" rx="9" fill="url(#mist)" />
+    <path d="M0 440 L110 380 L200 425 L300 375 L410 430 L500 395 L600 430 V560 H0Z" fill="#335a43" />
+    <path d="M0 500 Q150 455 300 488 T600 470 V560 H0Z" fill="#1f3b2d" />
+    <!-- terraces -->
+    <g stroke="#5f8467" stroke-width="2" fill="none" opacity="0.6">
+      <path d="M30 520 Q160 488 290 508" />
+      <path d="M330 515 Q450 492 580 500" />
+    </g>
+  </g>
+
+  <!-- coffee branch -->
+  <g class="branch">
+    <path d="M600 120 C520 170 470 230 430 330 C410 380 395 420 380 470" fill="none" stroke="#5a3a26" stroke-width="7" stroke-linecap="round" />
+    <path d="M520 175 C560 150 590 160 600 180 C570 200 540 196 520 175Z" fill="#2f5d45" />
+    <path d="M500 195 C480 150 490 120 515 112 C528 145 522 175 500 195Z" fill="#3f7556" />
+    <path d="M455 270 C500 255 530 268 540 292 C505 305 475 296 455 270Z" fill="#2f5d45" />
+    <path d="M445 285 C410 260 405 228 425 212 C448 236 455 262 445 285Z" fill="#3f7556" />
+    <path d="M405 400 C440 395 465 410 470 432 C440 440 418 428 405 400Z" fill="#3f7556" />
+    <g class="cherries">
+      <circle cx="470" cy="232" r="13" fill="#c2402e" />
+      <circle cx="490" cy="246" r="12" fill="#a8321f" />
+      <circle cx="466" cy="256" r="11" fill="#d9573a" />
+      <circle cx="415" cy="350" r="12" fill="#c2402e" />
+      <circle cx="433" cy="362" r="11" fill="#e07a4a" />
+      <circle cx="412" cy="372" r="10" fill="#a8321f" />
+      <g fill="#fff" opacity="0.55">
+        <circle cx="465" cy="227" r="3" />
+        <circle cx="486" cy="241" r="2.5" />
+        <circle cx="411" cy="345" r="2.6" />
+      </g>
+    </g>
+  </g>
+
+  <!-- arch frame -->
+  <path d="M40 560V250C40 120 160 30 300 30s260 90 260 220v310" fill="none" stroke="#1f3b2d" stroke-width="3" />
+</svg>
+
+<style>
+  .hero-art {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+  .mist {
+    animation: drift 14s ease-in-out infinite alternate;
+  }
+  .m2 {
+    animation-duration: 18s;
+    animation-direction: alternate-reverse;
+  }
+  .sun {
+    animation: rise 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .branch {
+    transform-origin: 600px 120px;
+    animation: sway 7s ease-in-out infinite alternate;
+  }
+  @keyframes drift {
+    to {
+      transform: translateX(60px);
+    }
+  }
+  @keyframes rise {
+    from {
+      transform: translateY(70px);
+      opacity: 0;
+    }
+  }
+  @keyframes sway {
+    to {
+      transform: rotate(1.8deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mist,
+    .sun,
+    .branch {
+      animation: none;
+    }
+  }
+</style>
