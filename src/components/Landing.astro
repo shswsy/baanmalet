@@ -3,6 +3,8 @@ import '../styles/global.css'
 import HeroArt from './HeroArt.astro'
 import BeanBag from './BeanBag.astro'
 import StoryIcon from './StoryIcon.astro'
+import CupArt from './CupArt.astro'
+import MapArt from './MapArt.astro'
 import { beans, days, menu, reviews, site, t, type Lang } from '../data/site'
 
 interface Props {
@@ -10,7 +12,6 @@ interface Props {
 }
 const { lang } = Astro.props
 const c = t[lang]
-const other: Lang = lang === 'th' ? 'en' : 'th'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 const href = (l: Lang) => `${base}/${l === 'th' ? '' : 'en/'}`
 const canonical = new URL(href(lang), Astro.site).href
@@ -20,6 +21,15 @@ const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent(site.mapQu
 const fmtHours = (h: [number, number] | null) =>
   h ? `${String(h[0]).padStart(2, '0')}:00 – ${String(h[1]).padStart(2, '0')}:00` : c.closed
 const price = (n: number) => n.toLocaleString('th-TH')
+const featured = menu[0]
+const navItems = [
+  ['menu', c.nav.menu],
+  ['beans', c.nav.beans],
+  ['story', c.nav.story],
+  ['workshop', c.nav.workshop],
+  ['visit', c.nav.visit],
+] as const
+const num = (n: number) => String(n).padStart(2, '0')
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -66,7 +76,7 @@ const jsonLd = {
     <link rel="alternate" hreflang="en" href={new URL(href('en'), Astro.site).href} />
     <link rel="alternate" hreflang="x-default" href={new URL(href('th'), Astro.site).href} />
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
-    <meta name="theme-color" content="#1f3b2d" />
+    <meta name="theme-color" content="#f6f0e6" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={c.title} />
     <meta property="og:description" content={c.description} />
@@ -78,8 +88,9 @@ const jsonLd = {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&family=Chonburi&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@400;500;600&display=swap"
     />
+    <script is:inline>document.documentElement.classList.add('js')</script>
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
 
@@ -88,68 +99,103 @@ const jsonLd = {
 
     <header class="nav" data-nav>
       <div class="wrap nav-row">
-        <a class="logo" href={href(lang)} aria-label={site.name[lang]}>
+        <a class="logo" href={href(lang)}>
           <span class="logo-mark" aria-hidden="true">
-            <svg viewBox="0 0 40 40"><path d="M20 4C11 12 11 28 20 36C29 28 29 12 20 4Z" fill="currentColor" /><path d="M20 8C16 16 24 24 20 32" stroke="var(--cream)" stroke-width="2.4" fill="none" stroke-linecap="round" /></svg>
+            <svg viewBox="0 0 40 40"><path d="M20 4C11 12 11 28 20 36C29 28 29 12 20 4Z" fill="currentColor" /><path d="M20 8C16 16 24 24 20 32" stroke="var(--bg)" stroke-width="2.4" fill="none" stroke-linecap="round" /></svg>
           </span>
           <span class="logo-text">
             <strong>{site.name[lang]}</strong>
             <small>{site.tagline[lang]}</small>
           </span>
         </a>
-        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" data-menu-btn>
-          <span></span><span></span><span class="sr">menu</span>
-        </button>
-        <nav id="nav-links" class="nav-links" data-nav-links>
-          <a href="#menu">{c.nav.menu}</a>
-          <a href="#beans">{c.nav.beans}</a>
-          <a href="#story">{c.nav.story}</a>
-          <a href="#workshop">{c.nav.workshop}</a>
-          <a href="#visit">{c.nav.visit}</a>
-          <a class="lang" href={href(other)} hreflang={other} lang={other}>{c.switchLang}</a>
-          <a class="btn btn-line" href="#line" data-line={c.greeting}>{c.line}</a>
+        <nav id="nav-links" class="nav-links" data-nav-links aria-label={lang === 'th' ? 'เมนูหลัก' : 'Main'}>
+          {navItems.map(([id, label]) => <a href={`#${id}`} data-spy={id}>{label}</a>)}
+          <a class="btn btn-line nav-line-mobile" href="#line" data-line={c.greeting}>
+            <span class="line-ico" aria-hidden="true"></span>{c.line}
+          </a>
         </nav>
+        <div class="nav-actions">
+          <div class="lang-switch" role="group" aria-label={lang === 'th' ? 'ภาษา' : 'Language'}>
+            <a href={href('th')} hreflang="th" lang="th" aria-current={lang === 'th' ? 'true' : undefined} aria-label="ภาษาไทย">TH</a>
+            <a href={href('en')} hreflang="en" lang="en" aria-current={lang === 'en' ? 'true' : undefined} aria-label="English">EN</a>
+          </div>
+          <a class="btn btn-line btn-sm nav-line" href="#line" data-line={c.greeting}>
+            <span class="line-ico" aria-hidden="true"></span>{c.line}
+          </a>
+          <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label={lang === 'th' ? 'เปิดเมนู' : 'Open menu'} data-menu-btn>
+            <span></span><span></span>
+          </button>
+        </div>
       </div>
     </header>
 
     <main id="main">
       <!-- HERO -->
-      <section class="hero">
-        <div class="wrap hero-grid">
-          <div class="hero-copy">
-            <p class="kicker reveal">{c.heroKicker}</p>
-            <h1 class="reveal" style="--d:.08s">
-              <span>{c.heroTitle[0]}</span>
-              <em>{c.heroTitle[1]}</em>
-            </h1>
-            <p class="lead reveal" style="--d:.16s">{c.heroLead}</p>
-            <div class="hero-ctas reveal" style="--d:.24s">
-              <a class="btn btn-primary" href="#menu">{c.heroCta}</a>
-              <a class="btn btn-ghost" href="#visit">{c.heroCta2}</a>
-            </div>
-            <p
-              class="open-badge reveal"
-              style="--d:.32s"
-              data-open
-              data-hours={JSON.stringify(site.hours)}
-              data-l-open={c.openNow}
-              data-l-closed={c.closedNow}
-              data-l-closes={c.closesAt}
-              data-l-opens={c.opensAt}
-              data-days={JSON.stringify(days[lang])}
-            >
-              <span class="dot"></span><span data-open-text>{fmtHours(site.hours[2])}</span>
-            </p>
-          </div>
-          <div class="hero-art-wrap reveal" style="--d:.1s">
-            <HeroArt />
-          </div>
-        </div>
+      <section class="hero" aria-labelledby="hero-title">
         <div class="wrap">
+          <div class="hero-panel">
+            <div class="hero-art-wrap">
+              <HeroArt label={lang === 'th' ? 'ภาพวาดดอยยามเช้าและกิ่งกาแฟ' : 'Illustration of northern mountains at dawn and a coffee branch'} />
+            </div>
+            <div class="hero-copy">
+              <p class="kicker hero-in">{c.heroKicker}</p>
+              <h1 id="hero-title" class="hero-in" style="--d:.08s">
+                <span>{c.heroTitle[0]}</span>
+                <em>{c.heroTitle[1]}</em>
+              </h1>
+              <p class="hero-lead hero-in" style="--d:.16s">{c.heroLead}</p>
+              <div class="hero-ctas hero-in" style="--d:.24s">
+                <a class="btn btn-primary btn-lg" href="#menu">{c.heroCta}<span class="arrow" aria-hidden="true">→</span></a>
+                <a class="btn btn-ghost btn-lg" href="#visit">{c.heroCta2}</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- quick info strip: the four things customers look for first -->
+          <ul class="info-strip hero-in" style="--d:.32s">
+            <li>
+              <a href="#visit" class="info-item">
+                <span class="info-label">{c.infoToday}</span>
+                <span
+                  class="open-badge"
+                  data-open
+                  data-hours={JSON.stringify(site.hours)}
+                  data-l-open={c.openNow}
+                  data-l-closed={c.closedNow}
+                  data-l-closes={c.closesAt}
+                  data-l-opens={c.opensAt}
+                  data-days={JSON.stringify(days[lang])}
+                >
+                  <span class="dot" aria-hidden="true"></span><span data-open-text>{fmtHours(site.hours[2])}</span>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href={mapsUrl} target="_blank" rel="noopener" class="info-item">
+                <span class="info-label">{c.infoWhere}</span>
+                <span class="info-value">{lang === 'th' ? 'ซอยนิมมานเหมินท์ เชียงใหม่' : 'Nimmanhaemin, Chiang Mai'}</span>
+                <span class="info-more">{c.infoMap} ↗</span>
+              </a>
+            </li>
+            <li>
+              <a href={site.phoneHref} class="info-item">
+                <span class="info-label">{c.infoCall}</span>
+                <span class="info-value">{site.phone}</span>
+              </a>
+            </li>
+            <li>
+              <a href="#line" data-line={c.greeting} class="info-item info-line">
+                <span class="info-label">{c.infoChat}</span>
+                <span class="info-value"><span class="line-ico" aria-hidden="true"></span>{c.line}</span>
+                <span class="info-more">{c.infoChatSub}</span>
+              </a>
+            </li>
+          </ul>
+
           <ul class="stats">
             {
               c.stats.map(([n, l]) => (
-                <li>
+                <li class="rv">
                   <strong>{n}</strong>
                   <span>{l}</span>
                 </li>
@@ -159,63 +205,85 @@ const jsonLd = {
         </div>
       </section>
 
-      <div class="lanna" aria-hidden="true"></div>
-
-      <!-- MENU -->
-      <section id="menu" class="section">
+      <!-- 01 MENU -->
+      <section id="menu" class="section" aria-labelledby="menu-title">
         <div class="wrap">
-          <header class="sec-head">
-            <h2>{c.menuTitle}</h2>
-            <p>{c.menuLead}</p>
+          <header class="sec-head rv">
+            <p class="eyebrow"><span class="num">{num(1)}</span>{c.nav.menu}</p>
+            <h2 id="menu-title">{c.menuTitle}</h2>
+            <p class="sec-lead">{c.menuLead}</p>
           </header>
-          <div class="tabs" role="tablist" aria-label={c.menuTitle} data-tabs>
-            {
-              (['all', 'coffee', 'noncoffee', 'bakery'] as const).map((k, i) => (
-                <button type="button" role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-cat={k}>
-                  {c.cats[k]}
-                </button>
-              ))
-            }
+          <div class="menu-grid">
+            <aside class="featured rv">
+              <div class="featured-art"><CupArt /></div>
+              <div class="featured-body">
+                <p class="featured-kicker">{c.menuFeatured}</p>
+                <h3>{featured.name[lang]}</h3>
+                <p>{featured.note[lang]}</p>
+                <div class="featured-foot">
+                  <span class="price-lg">{price(featured.price)}<small>฿</small></span>
+                  <a class="btn btn-line btn-sm" href="#line" data-line={c.menuFeaturedMsg}>
+                    <span class="line-ico" aria-hidden="true"></span>{c.menuFeaturedCta}
+                  </a>
+                </div>
+              </div>
+            </aside>
+            <div class="menu-main rv">
+              <div class="tabs" role="tablist" aria-label={c.menuTitle} data-tabs>
+                {
+                  (['all', 'coffee', 'noncoffee', 'bakery'] as const).map((k, i) => (
+                    <button type="button" role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-cat={k}>
+                      {c.cats[k]}
+                      <span class="count">{k === 'all' ? menu.length : menu.filter((m) => m.cat === k).length}</span>
+                    </button>
+                  ))
+                }
+              </div>
+              <ul class="menu-list" data-menu>
+                {
+                  menu.map((m) => (
+                    <li class="menu-item" data-cat={m.cat}>
+                      <div class="menu-top">
+                        <h3>{m.name[lang]}</h3>
+                        <span class="leader" aria-hidden="true" />
+                        <span class="price">{price(m.price)}</span>
+                      </div>
+                      <p>
+                        {m.tag && <span class="tag">{m.tag[lang]}</span>}
+                        {m.note[lang]}
+                      </p>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
           </div>
-          <ul class="menu-list" data-menu>
-            {
-              menu.map((m) => (
-                <li class="menu-item" data-cat={m.cat}>
-                  <div class="menu-top">
-                    <h3>
-                      {m.name[lang]}
-                      {m.tag && <span class="tag">{m.tag[lang]}</span>}
-                    </h3>
-                    <span class="leader" aria-hidden="true" />
-                    <span class="price">{price(m.price)}</span>
-                  </div>
-                  <p>{m.note[lang]}</p>
-                </li>
-              ))
-            }
-          </ul>
         </div>
       </section>
 
-      <!-- BEANS -->
-      <section id="beans" class="section section-dark">
+      <!-- 02 BEANS -->
+      <section id="beans" class="section section-dark" aria-labelledby="beans-title">
         <div class="wrap">
-          <header class="sec-head">
-            <h2>{c.beansTitle}</h2>
-            <p>{c.beansLead}</p>
+          <header class="sec-head rv">
+            <p class="eyebrow"><span class="num">{num(2)}</span>{c.nav.beans}</p>
+            <h2 id="beans-title">{c.beansTitle}</h2>
+            <p class="sec-lead">{c.beansLead}</p>
           </header>
           <ul class="beans">
             {
               beans.map((b) => (
-                <li class="bean">
-                  <BeanBag hue={b.hue} label={b.name[lang]} />
+                <li class="bean rv" style={`--hue:${b.hue}`}>
+                  <div class="bean-art">
+                    <BeanBag hue={b.hue} label={b.name[lang]} />
+                    <span class="bean-process">{b.process[lang]}</span>
+                  </div>
                   <div class="bean-body">
                     <h3>{b.name[lang]}</h3>
-                    <p class="bean-origin">
-                      {b.origin[lang]} · {b.process[lang]}
-                    </p>
-                    <p class="bean-notes">{b.notes[lang]}</p>
-                    <div class="roast" aria-label={`${c.roast} ${b.roast}/5`}>
+                    <p class="bean-origin">{b.origin[lang]}</p>
+                    <ul class="bean-notes">
+                      {b.notes[lang].split(' · ').map((n) => <li>{n}</li>)}
+                    </ul>
+                    <div class="roast" role="img" aria-label={`${c.roast} ${b.roast}/5`}>
                       <span>{c.roastScale[0]}</span>
                       <span class="roast-bar">
                         {[1, 2, 3, 4, 5].map((n) => (
@@ -225,11 +293,11 @@ const jsonLd = {
                       <span>{c.roastScale[1]}</span>
                     </div>
                     <div class="bean-foot">
-                      <span class="price">
-                        {price(b.price)} <small>฿ / 200 g</small>
+                      <span class="price-lg">
+                        {price(b.price)}<small>฿ {c.beansPer}</small>
                       </span>
-                      <a class="btn btn-line btn-sm" href="#line" data-line={c.orderMsg(b.name[lang])}>
-                        {c.order}
+                      <a class="btn btn-cream btn-sm" href="#line" data-line={c.orderMsg(b.name[lang])}>
+                        <span class="line-ico" aria-hidden="true"></span>{c.order}
                       </a>
                     </div>
                   </div>
@@ -240,20 +308,26 @@ const jsonLd = {
         </div>
       </section>
 
-      <!-- STORY -->
-      <section id="story" class="section">
+      <!-- 03 STORY -->
+      <section id="story" class="section" aria-labelledby="story-title">
         <div class="wrap">
-          <header class="sec-head center">
-            <h2>{c.storyTitle}</h2>
+          <header class="sec-head rv">
+            <p class="eyebrow"><span class="num">{num(3)}</span>{c.storyKicker}</p>
+            <h2 id="story-title">{c.storyTitle}</h2>
           </header>
           <ol class="story">
             {
               c.story.map(([h, p], i) => (
-                <li class="reveal-on-scroll">
-                  <StoryIcon kind={i as 0 | 1 | 2} />
-                  <span class="story-no">0{i + 1}</span>
-                  <h3>{h}</h3>
-                  <p>{p}</p>
+                <li class="story-row rv">
+                  <div class={`story-art story-art-${i}`}>
+                    <span class="story-big" aria-hidden="true">{num(i + 1)}</span>
+                    <StoryIcon kind={i as 0 | 1 | 2} />
+                  </div>
+                  <div class="story-text">
+                    <span class="story-no">{num(i + 1)} / {num(c.story.length)}</span>
+                    <h3>{h}</h3>
+                    <p>{p}</p>
+                  </div>
                 </li>
               ))
             }
@@ -261,46 +335,59 @@ const jsonLd = {
         </div>
       </section>
 
-      <!-- WORKSHOP -->
-      <section id="workshop" class="section">
+      <!-- 04 WORKSHOP -->
+      <section id="workshop" class="section section-tight" aria-labelledby="workshop-title">
         <div class="wrap">
-          <div class="workshop">
-            <div>
-              <h2>{c.workshopTitle}</h2>
-              <p class="lead">{c.workshopLead}</p>
+          <div class="workshop rv">
+            <div class="workshop-copy">
+              <p class="eyebrow"><span class="num">{num(4)}</span>{c.nav.workshop}</p>
+              <h2 id="workshop-title">{c.workshopTitle}</h2>
+              <p class="workshop-lead">{c.workshopLead}</p>
               <ul class="checks">
                 {c.workshopPoints.map((p) => <li>{p}</li>)}
               </ul>
-              <a class="btn btn-primary" href="#line" data-line={c.workshopMsg}>
-                {c.workshopCta}
+              <a class="btn btn-cream btn-lg" href="#line" data-line={c.workshopMsg}>
+                <span class="line-ico" aria-hidden="true"></span>{c.workshopCta}
               </a>
             </div>
-            <figure class="ticket" aria-hidden="true">
-              <span class="ticket-day">SAT</span>
-              <span class="ticket-time">10:00</span>
+            <div class="ticket" aria-hidden="true">
+              <div class="ticket-top">
+                <span class="ticket-day">SAT</span>
+                <span class="ticket-time">10:00–12:00</span>
+              </div>
+              <p class="ticket-label">{c.workshopSeats}</p>
               <span class="ticket-seats">
                 {[1, 2, 3, 4, 5, 6].map((n) => <i class={n <= 4 ? 'taken' : ''} />)}
               </span>
-              <span class="ticket-price">890 ฿</span>
-            </figure>
+              <p class="ticket-left">{c.workshopSeatsLeft}</p>
+              <div class="ticket-foot">
+                <span>Pour-over 101</span>
+                <strong>890 ฿</strong>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- REVIEWS -->
-      <section class="section section-cream">
+      <!-- 05 REVIEWS -->
+      <section class="section" aria-labelledby="reviews-title">
         <div class="wrap">
-          <header class="sec-head">
-            <h2>{c.reviewsTitle}</h2>
+          <header class="sec-head rv">
+            <p class="eyebrow"><span class="num">{num(5)}</span>4.8 ★ · 600+</p>
+            <h2 id="reviews-title">{c.reviewsTitle}</h2>
           </header>
           <ul class="reviews">
             {
               reviews.map((r) => (
-                <li>
+                <li class="rv">
                   <p class="stars" aria-label="5/5">★★★★★</p>
                   <blockquote>{r.text[lang]}</blockquote>
                   <p class="who">
-                    {r.who} · <span>{r.src}</span>
+                    <span class="avatar" aria-hidden="true">{r.who.slice(0, 1)}</span>
+                    <span>
+                      <strong>{r.who}</strong>
+                      <small>{r.src}</small>
+                    </span>
                   </p>
                 </li>
               ))
@@ -309,62 +396,102 @@ const jsonLd = {
         </div>
       </section>
 
-      <!-- VISIT -->
-      <section id="visit" class="section">
-        <div class="wrap visit">
-          <div>
-            <h2>{c.visitTitle}</h2>
-            <address>
-              <strong>{site.name[lang]}</strong>
-              <br />
-              {site.address[lang]}
-            </address>
-            <p class="muted">{c.parking}</p>
-            <h3 class="hours-title">{c.hoursTitle}</h3>
-            <table class="hours" data-hours-table>
-              <tbody>
-                {
-                  [1, 2, 3, 4, 5, 6, 0].map((d) => (
-                    <tr data-day={d}>
-                      <th scope="row">{days[lang][d]}</th>
-                      <td>{fmtHours(site.hours[d])}</td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-            <div class="visit-ctas">
-              <a class="btn btn-primary" href={mapsUrl} target="_blank" rel="noopener">{c.directions}</a>
-              <a class="btn btn-ghost" href={site.phoneHref}>{c.call} {site.phone}</a>
+      <!-- 06 VISIT -->
+      <section id="visit" class="section section-sand" aria-labelledby="visit-title">
+        <div class="wrap">
+          <header class="sec-head rv">
+            <p class="eyebrow"><span class="num">{num(6)}</span>{c.nav.visit}</p>
+            <h2 id="visit-title">{c.visitTitle}</h2>
+            <p class="sec-lead">{c.visitLead}</p>
+          </header>
+          <div class="visit">
+            <div class="visit-card rv">
+              <div class="visit-block">
+                <h3>{c.addressLabel}</h3>
+                <address>
+                  <strong>{site.name[lang]}</strong>
+                  <br />
+                  {site.address[lang]}
+                </address>
+                <p class="muted small">{c.parking}</p>
+              </div>
+              <div class="visit-block">
+                <h3>{c.hoursTitle}</h3>
+                <table class="hours" data-hours-table>
+                  <tbody>
+                    {
+                      [1, 2, 3, 4, 5, 6, 0].map((d) => (
+                        <tr data-day={d} class={site.hours[d] ? '' : 'is-closed'}>
+                          <th scope="row">
+                            {days[lang][d]}
+                            <span class="today-tag">{c.today}</span>
+                          </th>
+                          <td>{fmtHours(site.hours[d])}</td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              </div>
+              <div class="visit-ctas">
+                <a class="btn btn-primary" href={mapsUrl} target="_blank" rel="noopener">{c.directions} ↗</a>
+                <a class="btn btn-ghost" href={site.phoneHref}>{c.call} {site.phone}</a>
+                <a class="btn btn-line" href="#line" data-line={c.greeting}><span class="line-ico" aria-hidden="true"></span>{c.line}</a>
+              </div>
             </div>
-          </div>
-          <div class="map" data-map={mapEmbed}>
-            <button type="button" class="map-load" data-map-load>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z" fill="currentColor" /></svg>
-              <span>{c.mapLoad}</span>
-              <small>{c.mapNote}</small>
-            </button>
+            <div class="map rv" data-map={mapEmbed}>
+              <MapArt name={site.name[lang]} />
+              <button type="button" class="map-load" data-map-load>
+                <span>{c.mapLoad}</span>
+                <small>{c.mapNote}</small>
+              </button>
+            </div>
           </div>
         </div>
       </section>
     </main>
 
     <footer class="footer">
-      <div class="lanna" aria-hidden="true"></div>
-      <div class="wrap footer-row">
-        <div>
-          <strong class="footer-name">{site.name[lang]}</strong>
-          <p>{site.tagline[lang]}</p>
+      <div class="wrap">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <strong class="footer-name">{site.name[lang]}</strong>
+            <p>{site.tagline[lang]}</p>
+          </div>
+          <div>
+            <h2 class="footer-h">{c.footerExplore}</h2>
+            <ul class="footer-links">
+              {navItems.map(([id, label]) => <li><a href={`#${id}`}>{label}</a></li>)}
+            </ul>
+          </div>
+          <div>
+            <h2 class="footer-h">{c.footerContact}</h2>
+            <ul class="footer-links">
+              <li><a href={site.phoneHref}>{site.phone}</a></li>
+              <li><a href="#line" data-line={c.greeting}>LINE</a></li>
+              <li><a href={mapsUrl} target="_blank" rel="noopener">{c.directions} ↗</a></li>
+              <li><a href={href(lang === 'th' ? 'en' : 'th')} hreflang={lang === 'th' ? 'en' : 'th'}>{c.switchLang}</a></li>
+            </ul>
+          </div>
         </div>
         <p class="footer-note">{c.footerNote}</p>
       </div>
     </footer>
 
     <!-- mobile quick actions -->
-    <nav class="quick" aria-label="quick actions">
-      <a href={site.phoneHref}>{c.call}</a>
-      <a href="#line" data-line={c.greeting}>LINE</a>
-      <a href={mapsUrl} target="_blank" rel="noopener">{c.nav.visit}</a>
+    <nav class="quick" aria-label={lang === 'th' ? 'ทางลัด' : 'Quick actions'}>
+      <a href={site.phoneHref}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z" fill="currentColor" /></svg>
+        {c.call}
+      </a>
+      <a href="#line" data-line={c.greeting} class="quick-line">
+        <span class="line-ico" aria-hidden="true"></span>
+        LINE
+      </a>
+      <a href={mapsUrl} target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z" fill="currentColor" /></svg>
+        {lang === 'th' ? 'นำทาง' : 'Directions'}
+      </a>
     </nav>
 
     <dialog class="line-dialog" data-line-dialog aria-labelledby="line-title">
@@ -392,8 +519,7 @@ const jsonLd = {
         } else {
           let next = d
           let add = 0
-          if (today && h < today[0]) add = 0
-          else {
+          if (!(today && h < today[0])) {
             do {
               next = (next + 1) % 7
               add++
@@ -446,23 +572,25 @@ const jsonLd = {
       // Mobile nav
       const menuBtn = document.querySelector<HTMLButtonElement>('[data-menu-btn]')
       const links = document.querySelector<HTMLElement>('[data-nav-links]')
-      menuBtn?.addEventListener('click', () => {
-        const open = menuBtn.getAttribute('aria-expanded') !== 'true'
-        menuBtn.setAttribute('aria-expanded', String(open))
+      const setMenu = (open: boolean) => {
+        menuBtn?.setAttribute('aria-expanded', String(open))
         links?.classList.toggle('open', open)
-      })
+      }
+      menuBtn?.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'))
       links?.addEventListener('click', (e) => {
-        if ((e.target as HTMLElement).closest('a')) {
-          menuBtn?.setAttribute('aria-expanded', 'false')
-          links.classList.remove('open')
-        }
+        if ((e.target as HTMLElement).closest('a')) setMenu(false)
+      })
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setMenu(false)
       })
 
-      // Header shadow + scroll reveals
+      // Compact header on scroll
       const nav = document.querySelector('[data-nav]')
       const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 8)
       onScroll()
       window.addEventListener('scroll', onScroll, { passive: true })
+
+      // Scroll reveals
       const io = new IntersectionObserver(
         (entries) =>
           entries.forEach((en) => {
@@ -471,9 +599,31 @@ const jsonLd = {
               io.unobserve(en.target)
             }
           }),
-        { threshold: 0.2 },
+        { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
       )
-      document.querySelectorAll('.reveal-on-scroll').forEach((el) => io.observe(el))
+      document.querySelectorAll('.rv').forEach((el) => io.observe(el))
+
+      // Highlight the nav link for the section in view
+      const spyLinks = new Map<string, HTMLElement>()
+      document.querySelectorAll<HTMLElement>('[data-spy]').forEach((a) => spyLinks.set(a.dataset.spy!, a))
+      const spy = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((en) => {
+            const a = spyLinks.get(en.target.id)
+            if (!a) return
+            if (en.isIntersecting) {
+              spyLinks.forEach((l) => l.removeAttribute('aria-current'))
+              a.setAttribute('aria-current', 'location')
+            } else if (a.getAttribute('aria-current')) {
+              a.removeAttribute('aria-current')
+            }
+          }),
+        { rootMargin: '-45% 0px -50% 0px' },
+      )
+      spyLinks.forEach((_, id) => {
+        const el = document.getElementById(id)
+        if (el) spy.observe(el)
+      })
     </script>
   </body>
 </html>
