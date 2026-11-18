@@ -1,0 +1,66 @@
+---
+// Illustrated neighbourhood map used as the placeholder until the real Google map is requested.
+interface Props {
+  name: string
+}
+const { name } = Astro.props
+---
+<svg class="map-art" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="560" fill="#e8dcc8" />
+  <g fill="#d3d6bd">
+    <path d="M40 40 h190 a20 20 0 0 1 20 20 v120 a20 20 0 0 1 -20 20 h-190 z" />
+    <rect x="560" y="360" width="220" height="170" rx="24" />
+    <circle cx="640" cy="120" r="70" />
+  </g>
+  <g fill="#dfd1bb">
+    <rect x="300" y="40" width="180" height="120" rx="12" />
+    <rect x="40" y="260" width="200" height="110" rx="12" />
+    <rect x="300" y="380" width="200" height="150" rx="12" />
+  </g>
+  <path d="M-20 480 C200 430 300 520 520 470 S760 420 820 440" stroke="#bcd0cf" stroke-width="22" fill="none" />
+  <g stroke="#fbf6ec" stroke-linecap="round" fill="none">
+    <path d="M270 -10 V570" stroke-width="30" />
+    <path d="M-10 225 H810" stroke-width="22" />
+    <path d="M520 -10 V570" stroke-width="14" />
+    <path d="M270 330 H810" stroke-width="12" />
+    <path d="M100 225 V570" stroke-width="10" />
+    <path d="M520 110 H810" stroke-width="10" />
+  </g>
+  <text x="282" y="140" font-size="15" fill="#7a6a58" font-family="IBM Plex Sans Thai, sans-serif" transform="rotate(90 282 140)" letter-spacing="2">NIMMANHAEMIN RD</text>
+  <g transform="translate(400 286)">
+    <circle class="map-pulse" r="34" fill="#b65a37" opacity="0.18" />
+    <path d="M0 -58 C-22 -58 -36 -42 -36 -22 C-36 6 0 30 0 30 S36 6 36 -22 C36 -42 22 -58 0 -58Z" fill="#b65a37" />
+    <circle cy="-23" r="12" fill="#fbf6ec" />
+    <rect x="-70" y="40" width="140" height="34" rx="17" fill="#2b1d15" />
+    <text y="63" text-anchor="middle" font-size="16" font-weight="600" fill="#fbf6ec" font-family="Prompt, sans-serif">{name}</text>
+  </g>
+</svg>
+
+<style>
+  .map-art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .map-pulse {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: map-pulse 2.4s ease-out infinite;
+  }
+  @keyframes map-pulse {
+    from {
+      transform: scale(0.6);
+      opacity: 0.4;
+    }
+    to {
+      transform: scale(1.8);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .map-pulse {
+      animation: none;
+    }
+  }
+</style>
