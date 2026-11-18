@@ -5,6 +5,8 @@
 
 **ดูเว็บจริง:** https://shswsy.github.io/baanmalet/ · [English](https://shswsy.github.io/baanmalet/en/)
 
+![ตัวอย่างหน้าเว็บบ้านเมล็ด](docs/demo.gif)
+
 ![หน้าจอบ้านเมล็ด](docs/screenshot.png)
 
 ## จุดเด่น
