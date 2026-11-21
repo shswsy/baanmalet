@@ -1,12 +1,12 @@
 ---
 // Wide dawn landscape over layered northern mountains, mist, and a coffee branch.
-// Drawn on a 1440x900 canvas; the hero anchors it bottom-right so narrow screens keep the sun + branch.
+// Drawn on a 1440x900 canvas; anchored bottom-right (slice) so narrow screens keep the sun + branch in a short band.
 interface Props {
   label: string
 }
 const { label } = Astro.props
 ---
-<svg class="hero-art" viewBox="0 0 1440 900" role="img" aria-label={label} xmlns="http://www.w3.org/2000/svg">
+<svg class="hero-art" viewBox="0 0 1440 900" preserveAspectRatio="xMaxYMax slice" role="img" aria-label={label} xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="ha-sky" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#efdcc3" />

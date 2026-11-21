@@ -1001,46 +1001,50 @@ html[lang='en'] .sec-head h2 {
   color: #cdbca9;
 }
 
-/* ---------- story (numbered, alternating) ---------- */
+/* ---------- story: three steps in one compact strip (the sequence is the content) ---------- */
+.section-story {
+  padding-block: clamp(56px, 6vw, 96px);
+}
+
+.section-story .sec-head {
+  margin-bottom: clamp(28px, 3.4vw, 48px);
+}
+
 .story {
+  position: relative;
   display: grid;
-  gap: clamp(48px, 6vw, 96px);
+  --g: clamp(20px, 3vw, 48px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--g);
+}
+
+/* dashed path joining the three icons */
+.story::before {
+  content: '';
+  position: absolute;
+  top: 44px;
+  left: 44px;
+  /* stop at the centre of the third icon */
+  right: calc((100% - 2 * var(--g)) / 3 - 44px);
+  border-top: 1.5px dashed rgba(43, 29, 21, 0.22);
 }
 
 .story-row {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-  gap: clamp(28px, 5vw, 96px);
-  align-items: center;
-}
-
-.story-row:nth-child(even) .story-art {
-  order: 2;
+  gap: 16px;
+  align-content: start;
 }
 
 .story-art {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  border-radius: var(--radius);
   display: grid;
   place-items: center;
-  overflow: hidden;
-  background: var(--sand);
-  --cream-2: var(--paper);
-}
-
-.story-art::before {
-  content: '';
-  position: absolute;
-  width: 92%;
-  aspect-ratio: 1;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
-  background: repeating-radial-gradient(circle, transparent 0 46px, rgba(43, 29, 21, 0.07) 46px 47px);
-}
-
-.story-row:nth-child(even) .story-text {
-  justify-self: end;
-  max-width: 36em;
+  background: var(--sand);
+  box-shadow: 0 0 0 8px var(--bg);
+  --cream-2: var(--paper);
 }
 
 .story-art-1 {
@@ -1052,41 +1056,27 @@ html[lang='en'] .sec-head h2 {
 }
 
 .story-art svg.story-icon {
-  width: clamp(140px, 16vw, 220px);
-  height: auto;
-  position: relative;
-}
-
-.story-big {
-  position: absolute;
-  left: 4%;
-  bottom: -12%;
-  font-family: 'Fraunces', serif;
-  font-style: italic;
-  font-size: clamp(160px, 20vw, 300px);
-  line-height: 1;
-  color: var(--coffee);
-  opacity: 0.07;
-  pointer-events: none;
+  width: 64px;
+  height: 64px;
 }
 
 .story-no {
   font-family: 'Fraunces', serif;
   font-style: italic;
-  font-size: 18px;
+  font-size: 16px;
   color: var(--terra-2);
 }
 
 .story-text h3 {
   font-family: var(--display);
   font-weight: var(--display-w);
-  font-size: clamp(30px, 3.4vw, 52px);
+  font-size: clamp(22px, 2vw, 30px);
   color: var(--coffee);
-  margin: 10px 0 16px;
+  margin: 4px 0 8px;
 }
 
 .story-text p {
-  font-size: clamp(17px, 1.3vw, 19px);
+  font-size: 16px;
   color: var(--muted);
   max-width: 30em;
 }
@@ -1806,13 +1796,20 @@ address strong {
     border-radius: var(--radius);
   }
 
+  /* a short band of the landscape under the buttons, cropped bottom-right (sun + branch),
+     so the sun never sits behind the ghost button and the info rows clear the quick bar */
   .hero-art-wrap {
-    width: 820px;
-    right: -110px;
+    left: 0;
+    width: 100%;
+    height: 250px;
+  }
+
+  .hero-art-wrap svg {
+    height: 100%;
   }
 
   .hero-copy {
-    padding: 34px 22px 290px;
+    padding: 30px 22px 188px;
   }
 
   .kicker {
@@ -1836,17 +1833,55 @@ address strong {
     margin-top: 24px;
   }
 
-  .hero-ctas .btn {
-    flex: 1 1 auto;
+  .hero-ctas {
+    flex-wrap: nowrap;
+    gap: 10px;
   }
 
+  .hero-ctas .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 14px;
+    white-space: nowrap;
+  }
+
+  html[lang='en'] .hero h1 {
+    font-size: clamp(36px, 10.4vw, 50px);
+  }
+
+  /* phones: two full-width rows (label left, value right) so the open status stays on one line */
   .info-strip {
-    margin: -48px 10px 0;
+    margin: -40px 10px 0;
     border-radius: 18px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .info-strip li + li {
+    border-left: 0;
+    border-top: 1px solid var(--line);
   }
 
   .info-item {
-    padding: 16px;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    min-height: 52px;
+    padding: 10px 16px;
+  }
+
+  .info-label {
+    flex: none;
+    width: 4.6em;
+  }
+
+  .info-item .info-more {
+    display: none;
+  }
+
+  .info-item .info-value::after {
+    content: '↗';
+    color: var(--terra-2);
+    font-size: 14px;
   }
 
   /* call + LINE live in the fixed quick bar on phones */
@@ -1856,16 +1891,13 @@ address strong {
 
   .info-value,
   .open-badge {
+    min-width: 0;
     font-size: 15.5px;
   }
 
   .open-badge {
-    align-items: flex-start;
     gap: 8px;
-  }
-
-  .open-badge .dot {
-    margin-top: 7px;
+    white-space: nowrap;
   }
 
   .stats {
@@ -1935,13 +1967,44 @@ address strong {
     flex-direction: column;
   }
 
-  .story-row {
+  /* phones: icon left, text right, the dashed path runs down the icons */
+  .story {
     grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
+    gap: 22px;
   }
 
-  .story-row:nth-child(even) .story-art {
-    order: 0;
+  .story::before {
+    top: 32px;
+    bottom: 32px;
+    left: 32px;
+    right: auto;
+    border-top: 0;
+    border-left: 1.5px dashed rgba(43, 29, 21, 0.22);
+  }
+
+  .story-row {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  .story-art {
+    width: 64px;
+    height: 64px;
+    box-shadow: 0 0 0 6px var(--bg);
+  }
+
+  .story-art svg.story-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .story-text h3 {
+    margin: 0 0 4px;
+  }
+
+  .story-text p {
+    font-size: 15px;
   }
 
   .workshop {

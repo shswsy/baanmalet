@@ -309,7 +309,7 @@ const jsonLd = {
       </section>
 
       <!-- 03 STORY -->
-      <section id="story" class="section" aria-labelledby="story-title">
+      <section id="story" class="section section-story" aria-labelledby="story-title">
         <div class="wrap">
           <header class="sec-head rv">
             <p class="eyebrow"><span class="num">{num(3)}</span>{c.storyKicker}</p>
@@ -320,7 +320,6 @@ const jsonLd = {
               c.story.map(([h, p], i) => (
                 <li class="story-row rv">
                   <div class={`story-art story-art-${i}`}>
-                    <span class="story-big" aria-hidden="true">{num(i + 1)}</span>
                     <StoryIcon kind={i as 0 | 1 | 2} />
                   </div>
                   <div class="story-text">
@@ -369,38 +368,11 @@ const jsonLd = {
         </div>
       </section>
 
-      <!-- 05 REVIEWS -->
-      <section class="section" aria-labelledby="reviews-title">
-        <div class="wrap">
-          <header class="sec-head rv">
-            <p class="eyebrow"><span class="num">{num(5)}</span>4.8 ★ · 600+</p>
-            <h2 id="reviews-title">{c.reviewsTitle}</h2>
-          </header>
-          <ul class="reviews">
-            {
-              reviews.map((r) => (
-                <li class="rv">
-                  <p class="stars" aria-label="5/5">★★★★★</p>
-                  <blockquote>{r.text[lang]}</blockquote>
-                  <p class="who">
-                    <span class="avatar" aria-hidden="true">{r.who.slice(0, 1)}</span>
-                    <span>
-                      <strong>{r.who}</strong>
-                      <small>{r.src}</small>
-                    </span>
-                  </p>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-      </section>
-
-      <!-- 06 VISIT -->
+      <!-- 05 VISIT -->
       <section id="visit" class="section section-sand" aria-labelledby="visit-title">
         <div class="wrap">
           <header class="sec-head rv">
-            <p class="eyebrow"><span class="num">{num(6)}</span>{c.nav.visit}</p>
+            <p class="eyebrow"><span class="num">{num(5)}</span>{c.nav.visit}</p>
             <h2 id="visit-title">{c.visitTitle}</h2>
             <p class="sec-lead">{c.visitLead}</p>
           </header>
@@ -447,6 +419,33 @@ const jsonLd = {
               </button>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- 06 REVIEWS -->
+      <section class="section" aria-labelledby="reviews-title">
+        <div class="wrap">
+          <header class="sec-head rv">
+            <p class="eyebrow"><span class="num">{num(6)}</span>4.8 ★ · 600+</p>
+            <h2 id="reviews-title">{c.reviewsTitle}</h2>
+          </header>
+          <ul class="reviews">
+            {
+              reviews.map((r) => (
+                <li class="rv">
+                  <p class="stars" aria-label="5/5">★★★★★</p>
+                  <blockquote>{r.text[lang]}</blockquote>
+                  <p class="who">
+                    <span class="avatar" aria-hidden="true">{r.who.slice(0, 1)}</span>
+                    <span>
+                      <strong>{r.who}</strong>
+                      <small>{r.src}</small>
+                    </span>
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
         </div>
       </section>
     </main>
