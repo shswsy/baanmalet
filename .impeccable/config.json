@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "fraunces",
+        "createdAt": "2026-11-21T07:43:01.945Z",
+        "reason": "established EN display face of the committed design (DESIGN.md); 2026-11-20 impeccable audit classed overused-font/Fraunces as a style note, not a defect"
+      }
+    ]
+  }
+}
