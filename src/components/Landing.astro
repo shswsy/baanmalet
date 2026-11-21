@@ -86,10 +86,20 @@ const jsonLd = {
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@400;500;600&display=swap"
-    />
+    {
+      lang === 'en' ? (
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@400;500;600&display=swap"
+        />
+      ) : (
+        <>
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@400;500;600&display=swap" />
+          {/* the Thai page uses Fraunces only for italic section numbers: a digits-only subset */}
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400&text=0123456789%2F%20&display=swap" />
+        </>
+      )
+    }
     <script is:inline>document.documentElement.classList.add('js')</script>
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
@@ -174,7 +184,7 @@ const jsonLd = {
               <a href={mapsUrl} target="_blank" rel="noopener" class="info-item">
                 <span class="info-label">{c.infoWhere}</span>
                 <span class="info-value">{lang === 'th' ? 'ซอยนิมมานเหมินท์ เชียงใหม่' : 'Nimmanhaemin, Chiang Mai'}</span>
-                <span class="info-more">{c.infoMap} ↗</span>
+                <span class="info-more">{c.infoMap}&nbsp;↗</span>
               </a>
             </li>
             <li>
@@ -229,10 +239,10 @@ const jsonLd = {
               </div>
             </aside>
             <div class="menu-main rv">
-              <div class="tabs" role="tablist" aria-label={c.menuTitle} data-tabs>
+              <div class="tabs" role="group" aria-label={c.menuTitle} data-tabs>
                 {
                   (['all', 'coffee', 'noncoffee', 'bakery'] as const).map((k, i) => (
-                    <button type="button" role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-cat={k}>
+                    <button type="button" aria-pressed={i === 0 ? 'true' : 'false'} data-cat={k}>
                       {c.cats[k]}
                       <span class="count">{k === 'all' ? menu.length : menu.filter((m) => m.cat === k).length}</span>
                     </button>
@@ -349,19 +359,19 @@ const jsonLd = {
                 <span class="line-ico" aria-hidden="true"></span>{c.workshopCta}
               </a>
             </div>
-            <div class="ticket" aria-hidden="true">
+            <div class="ticket">
               <div class="ticket-top">
-                <span class="ticket-day">SAT</span>
+                <span class="ticket-day">{c.ticketDay}</span>
                 <span class="ticket-time">10:00–12:00</span>
               </div>
               <p class="ticket-label">{c.workshopSeats}</p>
-              <span class="ticket-seats">
+              <span class="ticket-seats" aria-hidden="true">
                 {[1, 2, 3, 4, 5, 6].map((n) => <i class={n <= 4 ? 'taken' : ''} />)}
               </span>
               <p class="ticket-left">{c.workshopSeatsLeft}</p>
               <div class="ticket-foot">
                 <span>Pour-over 101</span>
-                <strong>890 ฿</strong>
+                <strong>890&nbsp;฿</strong>
               </div>
             </div>
           </div>
@@ -406,7 +416,7 @@ const jsonLd = {
                 </table>
               </div>
               <div class="visit-ctas">
-                <a class="btn btn-primary" href={mapsUrl} target="_blank" rel="noopener">{c.directions} ↗</a>
+                <a class="btn btn-primary" href={mapsUrl} target="_blank" rel="noopener">{c.directions}&nbsp;↗</a>
                 <a class="btn btn-ghost" href={site.phoneHref}>{c.call} {site.phone}</a>
                 <a class="btn btn-line" href="#line" data-line={c.greeting}><span class="line-ico" aria-hidden="true"></span>{c.line}</a>
               </div>
@@ -428,12 +438,13 @@ const jsonLd = {
           <header class="sec-head rv">
             <p class="eyebrow"><span class="num">{num(6)}</span>4.8 ★ · 600+</p>
             <h2 id="reviews-title">{c.reviewsTitle}</h2>
+            <p class="sec-lead demo-tag">{c.reviewsDemo}</p>
           </header>
           <ul class="reviews">
             {
               reviews.map((r) => (
                 <li class="rv">
-                  <p class="stars" aria-label="5/5">★★★★★</p>
+                  <p class="stars" role="img" aria-label={lang === 'th' ? '5 จาก 5 ดาว' : '5 out of 5 stars'}>★★★★★</p>
                   <blockquote>{r.text[lang]}</blockquote>
                   <p class="who">
                     <span class="avatar" aria-hidden="true">{r.who.slice(0, 1)}</span>
@@ -468,7 +479,7 @@ const jsonLd = {
             <ul class="footer-links">
               <li><a href={site.phoneHref}>{site.phone}</a></li>
               <li><a href="#line" data-line={c.greeting}>LINE</a></li>
-              <li><a href={mapsUrl} target="_blank" rel="noopener">{c.directions} ↗</a></li>
+              <li><a href={mapsUrl} target="_blank" rel="noopener">{c.directions}&nbsp;↗</a></li>
               <li><a href={href(lang === 'th' ? 'en' : 'th')} hreflang={lang === 'th' ? 'en' : 'th'}>{c.switchLang}</a></li>
             </ul>
           </div>
@@ -537,7 +548,7 @@ const jsonLd = {
       tabs?.addEventListener('click', (e) => {
         const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-cat]')
         if (!btn) return
-        tabs.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', String(b === btn)))
+        tabs.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)))
         const cat = btn.dataset.cat
         document.querySelectorAll<HTMLElement>('[data-menu] .menu-item').forEach((li) => {
           li.hidden = cat !== 'all' && li.dataset.cat !== cat
@@ -571,16 +582,19 @@ const jsonLd = {
       // Mobile nav
       const menuBtn = document.querySelector<HTMLButtonElement>('[data-menu-btn]')
       const links = document.querySelector<HTMLElement>('[data-nav-links]')
-      const setMenu = (open: boolean) => {
+      const setMenu = (open: boolean, returnFocus = false) => {
+        const was = menuBtn?.getAttribute('aria-expanded') === 'true'
         menuBtn?.setAttribute('aria-expanded', String(open))
         links?.classList.toggle('open', open)
+        if (open && !was) links?.querySelector<HTMLElement>('a')?.focus()
+        if (!open && was && returnFocus) menuBtn?.focus()
       }
       menuBtn?.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'))
       links?.addEventListener('click', (e) => {
         if ((e.target as HTMLElement).closest('a')) setMenu(false)
       })
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') setMenu(false)
+        if (e.key === 'Escape') setMenu(false, true)
       })
 
       // Compact header on scroll

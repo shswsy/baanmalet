@@ -367,7 +367,10 @@ a {
 }
 
 .lang-switch a {
-  min-width: 40px;
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
   padding: 6px 10px;
   border-radius: 999px;
   text-align: center;
@@ -435,7 +438,6 @@ a {
   font-family: var(--ui);
   font-size: 15px;
   font-weight: 500;
-  letter-spacing: 0.06em;
   color: var(--terra-2);
   margin-bottom: 18px;
 }
@@ -635,8 +637,15 @@ html[lang='en'] .hero h1 em {
   font-family: var(--ui);
   font-size: 14.5px;
   font-weight: 500;
-  letter-spacing: 0.06em;
   color: var(--muted);
+}
+
+html[lang='en'] :is(.kicker, .eyebrow) {
+  letter-spacing: 0.06em;
+}
+
+.demo-tag {
+  font-size: 14px;
 }
 
 .eyebrow .num {
@@ -792,12 +801,12 @@ html[lang='en'] .sec-head h2 {
   background: rgba(43, 29, 21, 0.08);
 }
 
-.tabs button[aria-selected='true'] {
+.tabs button[aria-pressed='true'] {
   background: var(--coffee);
   color: var(--bg);
 }
 
-.tabs button[aria-selected='true'] .count {
+.tabs button[aria-pressed='true'] .count {
   background: rgba(246, 240, 230, 0.18);
 }
 
@@ -1514,10 +1523,12 @@ address strong {
 
 .footer-links {
   display: grid;
-  gap: 6px;
+  gap: 0;
 }
 
 .footer-links a {
+  display: inline-block;
+  padding-block: 9px;
   text-decoration: none;
 }
 
@@ -1697,6 +1708,10 @@ address strong {
 
   .menu-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .menu-grid .menu-main {
+    order: -1;
   }
 
   .featured {
